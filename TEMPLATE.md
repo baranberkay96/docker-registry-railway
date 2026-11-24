@@ -24,6 +24,7 @@
 - htpasswd (bcrypt) login from generated credentials; fail-closed on unusable passwords (8.29).
 - Storage in a Railway Bucket (S3 driver): stateless registry, replicas possible, pulls redirected to signed Bucket URLs, GC can run in a separate cron service (a volume cannot be shared, Rule 3b).
 - Deletes enabled; weekly `garbage-collect` cron (Sunday 04:00 UTC) exercised in the test (8.25).
+- No in-memory blob-descriptor cache: with GC in a separate service a cached descriptor kept answering 307 for deleted layers (seen in the test), which would make clients skip re-uploading them.
 - Storage-driver health check: `/` answers 503 when the Bucket is unreachable, so the deploy healthcheck is real.
 
 ## Pinned versions
@@ -42,7 +43,7 @@
 
 ## Resource profile
 
-Registry idle ~20-30 MB (measured, see report); GC job runs seconds to minutes weekly. < $1/month RAM plus Bucket storage. Minimum plan: Trial.
+Registry idle 11-37 MB (measured 2026-11-24); GC job runs seconds to minutes weekly. < $1/month RAM plus Bucket storage. Minimum plan: Trial.
 
 ## Verification checklist
 
