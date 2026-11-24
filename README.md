@@ -1,5 +1,7 @@
 # Deploy and Host Docker Registry with Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/docker-registry-3-private-container-regi?referralCode=20H68q)
+
 Docker Registry (the CNCF Distribution project) is the open-source server behind private container image registries. This template runs Registry 3.1 with a password login, image storage in a Railway Bucket, image deletion enabled and a weekly garbage-collection job, so you can `docker push` and `docker pull` your own images over HTTPS.
 
 > Community template, not affiliated with Docker, Inc. or the CNCF Distribution project.
