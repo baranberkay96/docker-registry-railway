@@ -42,6 +42,9 @@ else
   where="container filesystem (not persistent)"
 fi
 
+# No blob-descriptor cache: the GC job runs in another service, and a cached
+# descriptor would keep reporting deleted layers as present, so clients would
+# skip re-uploading them and pushes would end up with missing layers.
 redirect="${REGISTRY_DISABLE_REDIRECT:-false}"
 case "$redirect" in true|false) ;; *) log "WARNING: REGISTRY_DISABLE_REDIRECT must be true or false, using false"; redirect=false ;; esac
 
@@ -55,8 +58,6 @@ storage:
 ${storage}
   delete:
     enabled: true
-  cache:
-    blobdescriptor: inmemory
   redirect:
     disable: ${redirect}
 http:
