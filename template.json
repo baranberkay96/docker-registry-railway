@@ -1,0 +1,149 @@
+{
+  "name": "Docker Registry 3 Private Container Registry",
+  "description": "Private image registry with login, Bucket storage, deletes and weekly GC.",
+  "category": "Other",
+  "tags": [
+    "docker",
+    "registry",
+    "container-registry",
+    "oci",
+    "distribution",
+    "images",
+    "devops"
+  ],
+  "image": "https://cdn.jsdelivr.net/gh/distribution/distribution@v3.1.2/docs/static/favicon/favicon.svg",
+  "upstream": {
+    "registry": "distribution/distribution v3.1.2, image registry:3.1.2@sha256:82f6ff4a7f982960c8aa51617fea3aabc485df6e55cce80d22deb1de36f1bc3c",
+    "checked": "2026-11-24"
+  },
+  "services": {
+    "Registry": {
+      "icon": "https://cdn.jsdelivr.net/gh/distribution/distribution@v3.1.2/docs/static/favicon/favicon.svg",
+      "source": {
+        "repo": "baranberkay96/docker-registry-railway",
+        "rootDirectory": "/services/registry"
+      },
+      "startCommand": null,
+      "preDeployCommand": null,
+      "healthcheckPath": "/",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ALWAYS",
+      "numReplicas": 1,
+      "cronSchedule": null,
+      "publicDomain": true,
+      "targetPort": 5000,
+      "tcpProxy": null,
+      "volume": null,
+      "variables": {
+        "ROLE": {
+          "defaultValue": "registry",
+          "description": "Process role: registry.",
+          "required": true
+        },
+        "PORT": {
+          "defaultValue": "5000",
+          "description": "Registry HTTP port (public domain target and healthcheck).",
+          "required": true
+        },
+        "REGISTRY_USERNAME": {
+          "defaultValue": "registry",
+          "description": "User name for docker login (letters, digits, . _ -).",
+          "required": true
+        },
+        "REGISTRY_PASSWORD": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Password for docker login, generated at deploy. 16-72 characters without spaces; anything else locks the registry.",
+          "required": true
+        },
+        "REGISTRY_HTTP_SECRET": {
+          "defaultValue": "${{secret(48, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Secret that signs upload state; keep it stable across redeploys and replicas.",
+          "required": true
+        },
+        "S3_ENDPOINT": {
+          "defaultValue": "${{Bucket.ENDPOINT}}",
+          "description": "Railway Bucket S3 endpoint.",
+          "required": false
+        },
+        "S3_REGION": {
+          "defaultValue": "${{Bucket.REGION}}",
+          "description": "Railway Bucket region.",
+          "required": false
+        },
+        "S3_BUCKET": {
+          "defaultValue": "${{Bucket.BUCKET}}",
+          "description": "Railway Bucket that stores image layers and manifests.",
+          "required": false
+        },
+        "S3_ACCESS_KEY_ID": {
+          "defaultValue": "${{Bucket.ACCESS_KEY_ID}}",
+          "description": "Railway Bucket access key.",
+          "required": false
+        },
+        "S3_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{Bucket.SECRET_ACCESS_KEY}}",
+          "description": "Railway Bucket secret key.",
+          "required": false
+        },
+        "REGISTRY_DISABLE_REDIRECT": {
+          "defaultValue": "false",
+          "description": "false = clients download layers directly from the Bucket via signed links (faster, no proxy egress); true = through the registry.",
+          "required": false
+        }
+      }
+    },
+    "Registry GC": {
+      "icon": "https://cdn.jsdelivr.net/gh/distribution/distribution@v3.1.2/docs/static/favicon/favicon.svg",
+      "source": {
+        "repo": "baranberkay96/docker-registry-railway",
+        "rootDirectory": "/services/registry"
+      },
+      "startCommand": null,
+      "preDeployCommand": null,
+      "healthcheckPath": null,
+      "healthcheckTimeout": null,
+      "restartPolicyType": "NEVER",
+      "numReplicas": 1,
+      "cronSchedule": "0 4 * * 0",
+      "publicDomain": false,
+      "targetPort": null,
+      "tcpProxy": null,
+      "volume": null,
+      "variables": {
+        "ROLE": {
+          "defaultValue": "gc",
+          "description": "Process role: gc (garbage collection, then exit).",
+          "required": true
+        },
+        "S3_ENDPOINT": {
+          "defaultValue": "${{Bucket.ENDPOINT}}",
+          "description": "Railway Bucket S3 endpoint.",
+          "required": false
+        },
+        "S3_REGION": {
+          "defaultValue": "${{Bucket.REGION}}",
+          "description": "Railway Bucket region.",
+          "required": false
+        },
+        "S3_BUCKET": {
+          "defaultValue": "${{Bucket.BUCKET}}",
+          "description": "Railway Bucket that stores image layers and manifests.",
+          "required": false
+        },
+        "S3_ACCESS_KEY_ID": {
+          "defaultValue": "${{Bucket.ACCESS_KEY_ID}}",
+          "description": "Railway Bucket access key.",
+          "required": false
+        },
+        "S3_SECRET_ACCESS_KEY": {
+          "defaultValue": "${{Bucket.SECRET_ACCESS_KEY}}",
+          "description": "Railway Bucket secret key.",
+          "required": false
+        }
+      }
+    }
+  },
+  "buckets": [
+    "Bucket"
+  ]
+}
